@@ -1,0 +1,42 @@
+cloud_no=0
+cloud_domain=gemini.cdl.ibm.com
+cache_dir=/opt/cloudland/cache
+cache_tmp_dir=$cache_dir/tmp
+volume_dir=/opt/cloudland/volume
+image_dir=/var/lib/libvirt/images
+xml_dir=/opt/cloudland/xml
+template_dir=/opt/cloudland/scripts/xml
+db_file=/opt/cloudland/db/cloudland.db
+dmasq_dir=/opt/cloudland/dnsmasq
+dns_server=9.115.78.212
+vxlan_mcast_addr=239.1.1.10
+vxlan_interface=eth0
+vlan_interface=eth0
+cpu_limit=10
+mem_limit=32768
+vol_limit=100
+disk_inc_limit=100
+mudata_dir=/opt/cloudland/mudata
+snapshot_dir=/var/snapshot
+
+function die()
+{
+    echo $1
+    exit -1
+}
+
+function inet_aton()
+{
+    ip="$1"
+    hex=`printf '%02x' ${ip//./ }`
+    printf "%lu\n" "0x${hex}"
+}
+
+function inet_ntoa()
+{
+    num="$1"
+    hex=`printf "%08x\n" ${num}`
+    for i in `echo ${hex} | sed "s/\(..\)/\1 /g"`; do
+        printf '%hu.' "0x${i}"
+    done | sed "s/\.$//g"
+}

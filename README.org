@@ -1,0 +1,9 @@
+#+TITLE: Cloudland scripts - shell and php
+
+* Directory structure
+
+  #+BEGIN_EXAMPLE
+  /opt/cloudland/etc - host.list
+  /opt/cloudland/html - php, should be linked to /usr/share/nginx/html/cloudland
+  /opt/cloudland/scripts - keep all nodes same
+  #+END_EXAMPLE
