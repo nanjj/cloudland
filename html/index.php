@@ -264,6 +264,33 @@
                     <input type="hidden" name="execution" value="clear_vm"/>
                     <input type="submit" value="delete"/>
                 </form>
+<?php
+								if ($status == "running") {
+?>
+                <form id="operate_vm" action="index.php" method="POST">
+                    <input type="hidden" name="vm_ID" value="<?php echo $inst_id?>"/>
+                    <input type="hidden" name="execution" value="destroy_vm"/>
+					<input type="hidden" name="force" value="true"/>
+                    <input type="submit" value="destroy"/>
+                </form>
+                <form id="operate_vm" action="index.php" method="POST">
+                    <input type="hidden" name="vm_ID" value="<?php echo $inst_id?>"/>
+                    <input type="hidden" name="execution" value="destroy_vm"/>
+					<input type="hidden" name="force" value="false"/>
+                    <input type="submit" value="shutdown"/>
+                </form>
+<?php
+								}else {
+?>
+                <form id="operate_vm" action="index.php" method="POST">
+                    <input type="hidden" name="vm_ID" value="<?php echo $inst_id?>"/>
+                    <input type="hidden" name="execution" value="create_vm"/>
+                    <input type="submit" value="start"/>
+                </form>
+<?php
+										}
+?>
+
 <?php                       echo "</td></tr>";
                         endforeach;
                         echo "</table>";
@@ -564,6 +591,26 @@
                             $disk_inc = $_POST["disk_inc"];
                         }
                         $value = launch_vm($_POST["image"], $_POST["vlan"], $hname, $ip, $cpu, $memory, $disk_inc);
+                        echo "<h2>$value[0]</h2><a href=index.php?request=get_vm_list><h3>Back</h3></a>";
+                        break;
+                    case "create_vm":
+                        if (!isset($_POST["vm_ID"])) {
+                            echo "<h2>No vm_ID Specified</h2>";
+                            break;
+                        }
+                        $value = create_vm($_POST["vm_ID"]);
+                        echo "<h2>$value[0]</h2><a href=index.php?request=get_vm_list><h3>Back</h3></a>";
+                        break;
+                    case "destroy_vm":
+                        if (!isset($_POST["vm_ID"])) {
+                            echo "<h2>No vm_ID Specified</h2>";
+                            break;
+                        }
+						$farce = "false";
+                        if (isset($_POST["force"])) {
+							$force = $_POST["force"];
+                        }
+                        $value = destroy_vm($_POST["vm_ID"], $force);
                         echo "<h2>$value[0]</h2><a href=index.php?request=get_vm_list><h3>Back</h3></a>";
                         break;
                     case "clear_vm":
