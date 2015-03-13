@@ -31,10 +31,10 @@ function create_vm($vm_ID)
     return exec_cmd("/opt/cloudland/scripts/frontend/create_vm.sh '$username' '$vm_ID'");
 }
 
-function destroy_vm($vm_ID)
+function destroy_vm($vm_ID, $force)
 {
     $username = $_SESSION["username"];
-    return exec_cmd("/opt/cloudland/scripts/frontend/destroy_vm.sh $username $vm_ID");
+    return exec_cmd("/opt/cloudland/scripts/frontend/destroy_vm.sh $username $vm_ID $force");
 }
 
 function attach_nic($vm_ID, $vlan)

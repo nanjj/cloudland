@@ -3,8 +3,11 @@
 cd `dirname $0`
 source ../cloudrc
 
-[ $# -lt 1 ] && die "$0 <vm_ID>"
+[ $# -lt 2 ] && die "$0 <vm_ID> <status>"
 
 vm_ID=$1
 
-sqlite3 $db_file "update instance set status='stopped' where inst_id='$vm_ID'"
+status=$2
+if [ $status = "stopped" ]; then
+	sqlite3 $db_file "update instance set status='stopped' where inst_id='$vm_ID'"
+fi

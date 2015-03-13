@@ -3,8 +3,15 @@
 cd `dirname $0`
 source ../cloudrc
 
-[ $# -lt 1 ] && die "$0 <vm_ID>"
+[ $# -lt 2 ] && die "$0 <vm_ID> <force>"
 
 vm_ID=$1
-virsh destroy $vm_ID
-echo "|:-COMMAND-:| /opt/cloudland/scripts/frontback/`basename $0` $vm_ID"
+force=`echo ${2:0:1} | tr [T] t`
+shutdown="shutdown"
+[ "$force" = "t" ] && shutdown="destroy"
+virsh $shutdown $vm_ID
+status=running
+if [ $? = 0 ]; then
+	status=stopped
+fi
+echo "|:-COMMAND-:| /opt/cloudland/scripts/frontback/`basename $0` $vm_ID $status"

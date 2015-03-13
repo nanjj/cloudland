@@ -117,7 +117,11 @@ if (isset($_POST["exec"]))
                 $value = "No vm_ID specified!";
                 return;
             }
-            $value = destroy_vm($_POST["vm_ID"]);
+			$force="false";
+            if (isset($_POST["force"])) {
+				$force=$_POST["force"];
+            }
+            $value = destroy_vm($_POST["vm_ID"], $force);
             break;
         case "attach_nic":
             if (!isset($_POST["vm_ID"])) {
