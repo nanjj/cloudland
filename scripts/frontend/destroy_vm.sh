@@ -12,9 +12,6 @@ sql_ret=`sqlite3 $db_file "select hyper_name from instance where inst_id='$vm_ID
 [ -z "$sql_ret" ] && die "No such VM!"
 hyper=`echo $sql_ret | cut -d'|' -f1`
 hyper_id=`sqlite3 $db_file "select id from compute where hyper_name='$hyper'"`
-if [ -n "$hyper_id" ]; then
-    /opt/cloudland/bin/sendmsg "inter $hyper_id" "/opt/cloudland/scripts/backend/`basename $0` $vm_ID $force"
-else
-    /opt/cloudland/bin/sendmsg "toall" "/opt/cloudland/scripts/backend/`basename $0` $vm_ID $force"
-fi
+[ -z "$hyper_id" ] && die "No hyper found!"
+/opt/cloudland/bin/sendmsg "inter $hyper_id" "/opt/cloudland/scripts/backend/`basename $0` $vm_ID $force"
 echo "$vm_ID|stopping"
