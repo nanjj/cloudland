@@ -20,20 +20,17 @@ function avail_cpu()
 
 function current_io()
 {
-    sar -d 2 1 | tail -1 | awk '{print $4, $5}'
+    sar -d 1 3 | tail -1 | awk '{printf "%d\n", (200000 - $4 - $5)}'
 }
 
 function current_RXTX()
 {
-    let interval=$RANDOM%10+1
-    res1=`cat /proc/net/dev | grep "$vxlan_interface:" | cut -d: -f2-`
-    sleep $interval
-    res2=`cat /proc/net/dev | grep "$vxlan_interface:" | cut -d: -f2-`
-    echo $res1 $res2 | awk '{printf "%d %d\n", ($17 - $1) * 8 / "'$interval'", ($25 - $9) * 8 / "'$interval'"}'
+    sar -n DEV 3 3 | grep "$vxlan_interface" | tail -1 | awk '{printf "%d\n", (2000000 - ($5 + $6) * 8)}'
 }
 
 while true; do
-    echo `avail_memory` `avail_disk` `avail_cpu` `current_RXTX` `current_io`
+    let avail_all=`avail_memory`+`avail_disk`+`avail_cpu`*100+`current_io`+`current_RXTX`
+    echo $avail_all
     let intval=$RANDOM%5+1
     sleep $intval
 done
