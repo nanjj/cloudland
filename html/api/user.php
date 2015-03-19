@@ -219,16 +219,13 @@
 		{
 			// get relevant values
 			$username = $_POST["username"];
-			$sha1 = $_POST["sha1"];
+			$passwd = $_POST["password1"];
 			// step 1: someone could have bypassed the javascript validation, so validate again.
 			if(!$this->validate_user_name($username)) {
 				$this->info("log in error: user name did not pass validation");
 				return false; }
-			if(preg_match(User::sha1regexp, $sha1)==0) {
-				$this->info("log in error: password did not pass validation");
-				return false; }
 			// step 2: if validation passed, log the user in
-			return $this->login_user($username, $sha1);
+			return $this->login_user($username, $passwd);
 		}
 
 		/**
@@ -541,31 +538,33 @@ echo $this->error;
 			return false;
 		}
 
+		function ldap_auth($username, $passwd)
+		{
+			$cmd = "/opt/cloudland/scripts/frontend/ldap_auth.sh " . $username . " " . $passwd;
+			exec($cmd, $out, $status);
+			return $status;
+		}
 		/**
 		 * Log a user in
 		 */
-		function login_user($username, $sha1)
+		function login_user($username, $passwd)
 		{
-			// transform sha1 into real password
-			$dbpassword = $this->token_hash_password($username, $sha1, $this->get_user_token($username));
-			if($dbpassword==$sha1) {
-				$this->info("password hashing is not implemented.");
-				return false; }
+			$ret = $this->ldap_auth($username, $passwd);
+			if ($ret != 0) {
+				$this->info("password mismatch for $username");
+				return false;
+			}
 
 			// perform the authentication step
-			$query = "SELECT password FROM users WHERE username = '$username'";
+			$query = "SELECT email FROM users WHERE username = '$username'";
 			foreach($this->database->query($query) as $data) {
-				if($dbpassword==$data["password"]) {
+				if($username==$data["email"]) {
 					// authentication passed - 1) mark active and update token
 					$this->mark_user_active($username);
-					$this->setSession($username, $this->update_user_token($username, $sha1));
+					$this->setSession($username, $this->update_user_token($username, $passwd));
 					// authentication passed - 2) signal authenticated
 					return true; }
-				// authentication failed
-				$this->info("password mismatch for $username");
-				if(User::unsafe_reporting) { $this->error = "incorrect password for $username."; }
-				else { $this->error = "the specified username/password combination is incorrect."; }
-				return false; }
+			}
 
 			// authentication could not take place
 			$this->info("there was no user $username in the database");
@@ -664,12 +663,6 @@ echo $this->error;
 			$token = $this->random_hex_string(32);
 			$update = "UPDATE users SET token = '$token' WHERE username = '$username'";
 			$this->database->exec($update);
-
-			// update the user's password
-			$newpassword = $this->token_hash_password($username, $sha1, $token);
-			$update = "UPDATE users SET password = '$newpassword' WHERE username = '$username'";
-			$this->database->exec($update);
-			$this->info("updated token and password for $username");
 
 			return $token;
 		}

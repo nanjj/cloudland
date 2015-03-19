@@ -64,20 +64,14 @@
             	<div class="left_top"></div>
               	<div class="left_s">
 <?php       if(!$USER->authenticated) { ?>
-                    <h2>CloudLand Registration:</h2>
-                    Note: do not use same email for different user and password length is at least 8.
-                    <div class="col_l">
-            <form class="controlbox" name="new user registration" id="registration" action="index.php" method="POST">
-                <input type="hidden" name="op" value="register"/>
-                <input type="hidden" name="sha1" value=""/>
-                <table>
-                    <tr><td><h3>user name: </h3></td><td><input type="text" name="username" value="" /></td></tr>
-                    <tr><td><h3>email address: </h3></td><td><input type="text" name="email" value="" /></td></tr>
-                    <tr><td><h3>password: </h3></td><td><input type="password" name="password1" value="" /></td></tr>
-                    <tr><td><h3>password (again): </h3></td><td><input type="password" name="password2" value="" /></td></tr>
-                </table>
-                <input type="button" value="register" onclick="User.processRegistration()"/>
-            </form>
+                    <h2>CloudLand Statements:</h2>
+1. Free to use but use at your own risk, we may provide limited technical support but no warranty of liability
+</br>
+2. Using IBM intranet ID to login, you can create 10 instances, 3 networks, 2 routers at maxmum with default quota
+</br>
+3. Choose VLAN 4090 if you want a 9.x IP address
+</br>
+4. Refer to document for usage and tips
 <?php       } else { ?>
                 <div class="col_l">
 <?php       } 
